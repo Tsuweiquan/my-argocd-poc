@@ -301,7 +301,8 @@ configs:
         - '.metadata.annotations."notified.notifications.argoproj.io"'
     # -- Legacy annotations used on HPA autoscaling/v1
     # @default -- See [values.yaml]
-    resource.customizations.ignoreResourceUpdates.autoscaling_HorizontalPodAutoscaler: |
+    resource.customizations.ignoreResourceUpdates.autoscaling_HorizontalPodAutoscaler:
+      |
       jqPathExpressions:
         - '.metadata.annotations."autoscaling.alpha.kubernetes.io/behavior"'
         - '.metadata.annotations."autoscaling.alpha.kubernetes.io/conditions"'
@@ -324,7 +325,8 @@ configs:
         - '.metadata.annotations."rollout.argoproj.io/desired-replicas"'
     # -- Ignores update if EndpointSlice is not excluded globally
     # @default -- See [values.yaml]
-    resource.customizations.ignoreResourceUpdates.discovery.k8s.io_EndpointSlice: |
+    resource.customizations.ignoreResourceUpdates.discovery.k8s.io_EndpointSlice:
+      |
       jsonPointers:
         - /metadata
         - /endpoints
@@ -400,7 +402,6 @@ configs:
         - ClusterBackgroundScanReport
         - UpdateRequest
 
-
   # Argo CD configuration parameters
   ## Ref: https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/argocd-cmd-params-cm.yaml
   params:
@@ -428,11 +429,11 @@ configs:
 
     # -- The name of the default role which Argo CD will falls back to, when authorizing API requests (optional).
     # If omitted or empty, users may be still be able to login, but will see no apps, projects, etc...
-    policy.default: ''
+    policy.default: ""
 
     # -- File containing user-defined policies and role definitions.
     # @default -- `''` (See [values.yaml])
-    policy.csv: ''
+    policy.csv: ""
     # Policy rules are in the form:
     #  p, subject, resource, action, object, effect
     # Role definitions and bindings are in the form:
@@ -495,7 +496,7 @@ configs:
       vs-ssh.visualstudio.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7Hr1oTWqNqOlzGJOfGJ4NakVyIzf1rXYd4d7wo6jBlkLvCA4odBlL0mDUyZ0/QUfTTqeu+tm22gOsv+VrVTMk6vwRU75gY/y9ut5Mb3bR5BV58dKXyq9A9UeB5Cakehn5Zgm6x1mKoVyf+FFn26iYqXJRgzIZZcZ5V6hrE0Qg39kZm4az48o0AUbf6Sp4SLdvnuMa2sVNwHBboS7EJkm57XQPVU3/QpyNLHbWDdzwtrlS+ez30S3AdYhLKEOxAG8weOnyrtLJAUen9mTkol8oII1edf7mWWbWVf0nBmly21+nZcmCTISQBtdcyPaEno7fFQMDD26/s0lfKob4Kw8H
 
     # -- Additional known hosts for private repositories
-    extraHosts: ''
+    extraHosts: ""
 
   # Repository TLS certificates
   # Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/declarative-setup/#repositories-using-self-signed-tls-certificates-or-are-signed-by-custom-ca
@@ -682,8 +683,7 @@ configs:
     ## Custom secrets. Useful for injecting SSO secrets into environment variables.
     ## Ref: https://argo-cd.readthedocs.io/en/stable/operator-manual/user-management/#sensitive-data-and-sso-client-secrets
     ## Note that all values must be non-empty.
-    extra:
-      {}
+    extra: {}
       # LDAP_PASSWORD: "mypassword"
 
     # -- Bcrypt hashed admin password
@@ -803,7 +803,6 @@ controller:
       #   cpu: 1
       #   memory: 1Gi
 
-
   ## Application controller image
   image:
     # -- Repository to use for the application controller
@@ -920,7 +919,7 @@ controller:
       type: RuntimeDefault
     capabilities:
       drop:
-      - ALL
+        - ALL
 
   # Readiness probe for application controller
   ## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
@@ -1232,11 +1231,11 @@ dex:
     # -- Annotations to be added to argocd-dex-server-tls secret
     annotations: {}
     # -- Certificate authority. Required for self-signed certificates.
-    ca: ''
+    ca: ""
     # -- Certificate private key
-    key: ''
+    key: ""
     # -- Certificate data. Must contain SANs of Dex service (ie: argocd-dex-server, argocd-dex-server.argo-cd.svc)
-    crt: ''
+    crt: ""
 
   # -- Annotations to be added to the Dex server Deployment
   deploymentAnnotations: {}
@@ -1284,7 +1283,7 @@ dex:
       type: RuntimeDefault
     capabilities:
       drop:
-      - ALL
+        - ALL
 
   ## Probes for Dex server
   ## Supported from Dex >= 2.28.0
@@ -1465,7 +1464,7 @@ redis:
         type: RuntimeDefault
       capabilities:
         drop:
-        - ALL
+          - ALL
 
     ## Probes for Redis exporter (optional)
     ## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
@@ -1616,7 +1615,7 @@ redis:
     allowPrivilegeEscalation: false
     capabilities:
       drop:
-      - ALL
+        - ALL
 
   # -- Redis service port
   servicePort: 6379
@@ -1992,8 +1991,8 @@ server:
   # @default -- `[]` (defaults to global.imagePullSecrets)
   imagePullSecrets: []
 
-  # -- Additional command line arguments to pass to Argo CD server
-  extraArgs: []
+  extraArgs:
+    - --insecure
 
   # -- Environment variables to pass to Argo CD server
   env: []
@@ -2050,7 +2049,7 @@ server:
         type: RuntimeDefault
       capabilities:
         drop:
-        - ALL
+          - ALL
 
     # -- Resource limits and requests for the argocd-extensions container
     resources: {}
@@ -2165,7 +2164,7 @@ server:
       type: RuntimeDefault
     capabilities:
       drop:
-      - ALL
+        - ALL
 
   ## Readiness and liveness probes for default backend
   ## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
@@ -2287,9 +2286,9 @@ server:
     # -- Labels to be added to argocd-server-tls secret
     labels: {}
     # -- Private Key of the certificate
-    key: ''
+    key: ""
     # -- Certificate data
-    crt: ''
+    crt: ""
 
   ## Server service configuration
   service:
@@ -2370,7 +2369,7 @@ server:
       # -- Prometheus ServiceMonitor tlsConfig
       tlsConfig: {}
       # -- Prometheus ServiceMonitor namespace
-      namespace: ""  # monitoring
+      namespace: "" # monitoring
       # -- Prometheus ServiceMonitor labels
       additionalLabels: {}
       # -- Prometheus ServiceMonitor annotations
@@ -2598,7 +2597,7 @@ server:
   # Refer to https://gateway-api.sigs.k8s.io/implementations/ for controller-specific details
   httproute:
     # -- Enable HTTPRoute resource for Argo CD server (Gateway API)
-    enabled: false
+    enabled: true
     # -- Additional HTTPRoute labels
     labels: {}
     # -- Additional HTTPRoute annotations
@@ -2606,14 +2605,14 @@ server:
     # -- Gateway API parentRefs for the HTTPRoute
     ## Must reference an existing Gateway
     # @default -- `[]` (See [values.yaml])
-    parentRefs: []
-      # - name: example-gateway
-      #   namespace: example-gateway-namespace
-      #   sectionName: https
+    parentRefs:
+      - name: argocd-gateway
+        namespace: argocd
+        sectionName: http
     # -- List of hostnames for the HTTPRoute
     # @default -- `[]` (See [values.yaml])
-    hostnames: []
-      # - argocd.example.com
+    hostnames:
+      - argocd.mgmt.local
     # -- HTTPRoute rules configuration
     # @default -- `[]` (See [values.yaml])
     rules:
@@ -2621,6 +2620,9 @@ server:
           - path:
               type: PathPrefix
               value: /
+        backendRefs:
+          - name: argocd-server
+            port: 80
         # filters: []
         #   - type: RequestHeaderModifier
         #     requestHeaderModifier:
@@ -2922,7 +2924,8 @@ repoServer:
     metrics: 8084
 
   # -- Host Network for Repo server pods
-  hostNetwork: false
+  hostNetwork:
+    false
 
     # -- [DNS configuration]
   dnsConfig: {}
@@ -2939,7 +2942,7 @@ repoServer:
       type: RuntimeDefault
     capabilities:
       drop:
-      - ALL
+        - ALL
 
   ## Readiness and liveness probes for Repo Server
   ## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
@@ -3017,11 +3020,11 @@ repoServer:
     # -- Labels to be added to argocd-repo-server-tls secret
     labels: {}
     # -- Certificate authority. Required for self-signed certificates.
-    ca: ''
+    ca: ""
     # -- Certificate private key
-    key: ''
+    key: ""
     # -- Certificate data. Must contain SANs of Repo service (ie: argocd-repo-server, argocd-repo-server.argo-cd.svc)
-    crt: ''
+    crt: ""
 
   ## Repo server service configuration
   service:
@@ -3244,7 +3247,7 @@ applicationSet:
       # -- Prometheus ServiceMonitor tlsConfig
       tlsConfig: {}
       # -- Prometheus ServiceMonitor namespace
-      namespace: ""  # monitoring
+      namespace: "" # monitoring
       # -- Prometheus ServiceMonitor labels
       additionalLabels: {}
       # -- Prometheus ServiceMonitor annotations
@@ -3323,7 +3326,7 @@ applicationSet:
       type: RuntimeDefault
     capabilities:
       drop:
-      - ALL
+        - ALL
 
   ## Probes for ApplicationSet controller (optional)
   ## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
@@ -3621,7 +3624,7 @@ notifications:
 
       # email-username:
       # email-password:
-        # For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/services/email/
+      # For more information: https://argo-cd.readthedocs.io/en/stable/operator-manual/notifications/services/email/
 
   metrics:
     # -- Enables prometheus metrics server
@@ -3711,7 +3714,7 @@ notifications:
       type: RuntimeDefault
     capabilities:
       drop:
-      - ALL
+        - ALL
 
   ## Probes for notifications controller Pods (optional)
   ## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
@@ -4200,7 +4203,7 @@ commitServer:
     allowPrivilegeEscalation: false
     capabilities:
       drop:
-      - ALL
+        - ALL
     seccompProfile:
       type: RuntimeDefault
 
@@ -4270,4 +4273,3 @@ commitServer:
     # -- Default network policy rules used by commit server
     # @default -- `false` (defaults to global.networkPolicy.create)
     create: false
-

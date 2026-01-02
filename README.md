@@ -48,16 +48,6 @@ kind create cluster --name japan-k8s
 kind create cluster --name mgmt-k8s
 ```
 
-### Install Gateway API CRDs
-``` bash
-# https://gateway-api.sigs.k8s.io/guides/getting-started/#installing-a-gateway-controller
-
-# Install Gateway API
-kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.1/standard-install.yaml
-kubectl get crds
-
-```
-
 ### Helm install argocd in mgmt k8s
 ``` bash
 helm repo add argo https://argoproj.github.io/argo-helm
@@ -113,68 +103,18 @@ argocd-server: v3.2.3+2b6251d
 
 ```
 
-## Setup DNSMasq to enable DNS routing
-```
-Your Application (browser, curl, etc.)
-         ↓
-    /etc/resolv.conf (nameserver 127.0.0.1)
-         ↓
-    dnsmasq (listening on 127.0.0.1:53)
-         ↓
-    Checks /etc/dnsmasq.d/mgmt-k8s.conf
-         ↓
-    ┌─────────────────────────────────┐
-    │ Is it argocd.mgmt.local?        │
-    └─────────────────────────────────┘
-         ↓                    ↓
-       YES                   NO
-         ↓                    ↓
-    Return 127.0.0.1    Forward to 8.8.8.8 or 1.1.1.1
-                             ↓
-                        Return actual IP
-```
-Install/Setup
-```
-sudo apt update
-sudo apt install dnsmasq
+## Setup Envoy Gateway
+```bash
+# 1. Clear any existing manually installed Gateway API CRDs to avoid Helm conflicts
+kubectl delete -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.1/standard-install.yaml
 
-# Stop systemd-resolved
-sudo systemctl disable systemd-resolved
-sudo systemctl stop systemd-resolved
+# 2. Install Envoy Gateway via Helm
+helm install eg oci://docker.io/envoyproxy/gateway-helm --version v1.6.1 -n envoy-gateway-system --create-namespace
 
-# Remove the symlink
-sudo rm /etc/resolv.conf
-
-# Create a new resolv.conf pointing to dnsmasq
-echo "nameserver 127.0.0.1" | sudo tee /etc/resolv.conf
-
-# Start dnsmasq
-sudo systemctl enable dnsmasq
-sudo systemctl restart dnsmasq
-
-# Test
-nslookup argocd.mgmt.local
-
-# For any DNS for mgmt cluster
--> Add into /etc/dnsmasq.d/mgmt-k8s.conf
-
-# For any DNS for singapore cluster
--> Add into /etc/dnsmasq.d/singapore-k8s.conf
-
-# For any DNS for japan cluster
--> Add into /etc/dnsmasq.d/japan-k8s.conf
+# 3. Wait for the controller to be ready
+kubectl wait --timeout=5m -n envoy-gateway-system deployment/envoy-gateway --for=condition=Available
 ```
 
-In `/etc/dnsmasq.d/mgmt-k8s.conf`, add
-```
-# wildcard DNS where any subdomain of .mgmt.local will be resolved to 127.0.0.1
-address=/.mgmt.local/127.0.0.1
-
-# Upstream DNS for internet domains
-server=8.8.8.8
-server=1.1.1.1
-
-```
 
 # Common Errors
 
