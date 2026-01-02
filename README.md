@@ -114,8 +114,26 @@ argocd-server: v3.2.3+2b6251d
 ```
 
 ## Setup DNSMasq to enable DNS routing
-Following https://computingpost.medium.com/install-and-configure-dnsmasq-on-ubuntu-22-04-20-04-18-04-1919a438e80d
-
+```
+Your Application (browser, curl, etc.)
+         ↓
+    /etc/resolv.conf (nameserver 127.0.0.1)
+         ↓
+    dnsmasq (listening on 127.0.0.1:53)
+         ↓
+    Checks /etc/dnsmasq.d/mgmt-k8s.conf
+         ↓
+    ┌─────────────────────────────────┐
+    │ Is it argocd.mgmt.local?        │
+    └─────────────────────────────────┘
+         ↓                    ↓
+       YES                   NO
+         ↓                    ↓
+    Return 127.0.0.1    Forward to 8.8.8.8 or 1.1.1.1
+                             ↓
+                        Return actual IP
+```
+Install/Setup
 ```
 sudo apt update
 sudo apt install dnsmasq
