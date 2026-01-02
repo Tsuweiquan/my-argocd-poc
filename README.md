@@ -66,7 +66,112 @@ helm repo update
 helm show values argo/argo-cd --version 9.2.3 > mgmt-k8s/helm/argocd/values.yaml
 # Pull down chart version Chart.yaml
 helm show chart argo/argo-cd --version 9.2.3 > mgmt-k8s/helm/argocd/Chart.yaml
+kubectl create namespace argocd
+helm upgrade --install argocd argo/argo-cd -n argocd -f mgmt-k8s/helm/argocd/values.yaml --version 9.2.3
+
+# To obtain the secret
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+# Port forward argocd server
+kubectl port-forward svc/argocd-server 8080:443 -n argocd
+# Login with username: admin and password from the secret above
+
+# Install argocd cli
+# Download from https://localhost:8080/download/argocd-linux-amd64
+cp ~/Downloads/argocd-linux-amd64 /usr/local/bin/argocd
+chmod +x /usr/local/bin/argocd
+argocd version # you will see error under argocd-server because we are not logged in
 ```
 
 ## Login with argocd cli
 
+``` bash
+argocd login localhost:8080 --username admin
+WARNING: server certificate had error: error creating connection: tls: failed to verify certificate: x509: certificate signed by unknown authority. Proceed insecurely (y/n)? y
+Password: 
+'admin:login' logged in successfully
+Context 'localhost:8080' updated
+
+argocd version
+argocd: v3.2.3+2b6251d
+  BuildDate: 2025-12-24T12:10:11Z
+  GitCommit: 2b6251dfedb54de40596272a73ed1fb19d740219
+  GitTreeState: clean
+  GoVersion: go1.25.0
+  Compiler: gc
+  Platform: linux/amd64
+argocd-server: v3.2.3+2b6251d
+  BuildDate: 2025-12-24T12:10:11Z
+  GitCommit: 2b6251dfedb54de40596272a73ed1fb19d740219
+  GitTreeState: clean
+  GoVersion: go1.25.0
+  Compiler: gc
+  Platform: linux/amd64
+  Kustomize Version: v5.7.0 2025-06-28T07:00:07Z
+  Helm Version: v3.18.4+gd80839c
+  Kubectl Version: v0.34.0
+  Jsonnet Version: v0.21.0
+
+```
+
+## Setup DNSMasq to enable DNS routing
+Following https://computingpost.medium.com/install-and-configure-dnsmasq-on-ubuntu-22-04-20-04-18-04-1919a438e80d
+
+```
+sudo apt update
+sudo apt install dnsmasq
+
+# Stop systemd-resolved
+sudo systemctl disable systemd-resolved
+sudo systemctl stop systemd-resolved
+
+# Remove the symlink
+sudo rm /etc/resolv.conf
+
+# Create a new resolv.conf pointing to dnsmasq
+echo "nameserver 127.0.0.1" | sudo tee /etc/resolv.conf
+
+# Start dnsmasq
+sudo systemctl enable dnsmasq
+sudo systemctl restart dnsmasq
+
+# Test
+nslookup argocd.mgmt.local
+
+# For any DNS for mgmt cluster
+-> Add into /etc/dnsmasq.d/mgmt-k8s.conf
+
+# For any DNS for singapore cluster
+-> Add into /etc/dnsmasq.d/singapore-k8s.conf
+
+# For any DNS for japan cluster
+-> Add into /etc/dnsmasq.d/japan-k8s.conf
+```
+
+In `/etc/dnsmasq.d/mgmt-k8s.conf`, add
+```
+# wildcard DNS where any subdomain of .mgmt.local will be resolved to 127.0.0.1
+address=/.mgmt.local/127.0.0.1
+
+# Upstream DNS for internet domains
+server=8.8.8.8
+server=1.1.1.1
+
+```
+
+# Common Errors
+
+### Too many open filesstream closed
+- coredns and kube-proxy was unable to start, stuck in Crashloopback    
+
+Solution
+```bash
+sudo sysctl -w fs.inotify.max_user_watches=524288 && sudo sysctl -w fs.inotify.max_user_instances=512
+
+# make it permanent
+sudo tee /etc/sysctl.d/99-kind-inotify.conf <<EOF
+fs.inotify.max_user_watches=524288
+fs.inotify.max_user_instances=512
+EOF
+sudo sysctl --system
+```
+The kind containers must be recreated AFTER the sysctl changes are applied for them to inherit the new limits. Simply recreating before applying sysctl won't work.
