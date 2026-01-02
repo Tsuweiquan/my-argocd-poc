@@ -115,6 +115,14 @@ helm install eg oci://docker.io/envoyproxy/gateway-helm --version v1.6.1 -n envo
 kubectl wait --timeout=5m -n envoy-gateway-system deployment/envoy-gateway --for=condition=Available
 ```
 
+## Setup cloud-provider-kind
+```bash
+# cloud-provider-kind will get read loadbalancer ips in Kind clusters
+# https://kind.sigs.k8s.io/docs/user/loadbalancer/
+go install sigs.k8s.io/cloud-provider-kind@latest
+sudo install ~/go/bin/cloud-provider-kind /usr/local/bin
+cloud-provider-kind --gateway-channel standard # Have to always run this after kind cluster is created
+```
 
 # Common Errors
 
@@ -132,4 +140,4 @@ fs.inotify.max_user_instances=512
 EOF
 sudo sysctl --system
 ```
-The kind containers must be recreated AFTER the sysctl changes are applied for them to inherit the new limits. Simply recreating before applying sysctl won't work.
+The kind containers must be recreated AFTER the sysctl changes are applied for them to inherit the new limits. Simply recreating before applying sysctl won't work. 
