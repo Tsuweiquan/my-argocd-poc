@@ -60,7 +60,12 @@ kubectl get crds
 
 ### Helm install argocd in mgmt k8s
 ``` bash
-
+helm repo add argo https://argoproj.github.io/argo-helm
+helm repo update
+# Pull down the helm chart values file
+helm show values argo/argo-cd --version 9.2.3 > mgmt-k8s/helm/argocd/values.yaml
+# Pull down chart version Chart.yaml
+helm show chart argo/argo-cd --version 9.2.3 > mgmt-k8s/helm/argocd/Chart.yaml
 ```
 
 ## Login with argocd cli
