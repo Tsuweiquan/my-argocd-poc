@@ -129,6 +129,36 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 ### Access URL
 Open **[http://argocd.mgmt.local](http://argocd.mgmt.local)** in your browser.
 
+
+## 6. Install and Access to Artifactory
+```bash
+helm upgrade --install artifactory jfrog/artifactory -f mgmt-k8s/helm/artifactory/values.yaml --namespace artifactory --create-namespace
+```
+
+### DNS Configuration
+Retrieve the External IP of the Envoy service and add it to your `/etc/hosts`:
+
+```bash
+# Find the IP
+kubectl get svc -n envoy-gateway-system
+
+# Add to /etc/hosts
+# Example: 172.18.0.6 artifactory.mgmt.local
+```
+
+### Retrieve Admin Password
+```bash
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+```
+
+### Access URL
+Open **[http://artifactory.mgmt.local](http://artifactory.mgmt.local)** in your browser.
+
+### Create the Gateway & HttpRoute for Artifactory
+```bash
+kubectl apply -f mgmt-k8s/helm/artifactory/artifactory-gateway.yaml
+kubectl apply -f mgmt-k8s/helm/artifactory/artifactory-httproute.yaml
+```
 ---
 
 ## Common CLI Commands
