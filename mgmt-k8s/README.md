@@ -146,13 +146,9 @@ kubectl get svc -n envoy-gateway-system
 # Example: 172.18.0.6 artifactory.mgmt.local
 ```
 
-### Retrieve Admin Password
-```bash
-kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
-```
-
 ### Access URL
 Open **[http://artifactory.mgmt.local](http://artifactory.mgmt.local)** in your browser.
+- login with `admin` and the password is `P@55word`
 
 ### Create the Gateway & HttpRoute for Artifactory
 ```bash
