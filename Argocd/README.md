@@ -51,6 +51,15 @@ argocd cluster add kind-singapore-k8s --insecure --plaintext --grpc-web
 ``` 
 ![registered clusters](argocd-clusters.png)
 
-## Create a new Project
+"Unknown" status is normal and expected for your management cluster after argocd cluster add succeeds. It shows "Unknown" because no Applications are deployed yet—ArgoCD only marks clusters "Successful" once they have monitored apps.
+​
+
+## Create a new Project for each region
+Example: 
+`argocd proj create myproject -d https://kubernetes.default.svc,mynamespace`
+
 - Singapore
+    - `argocd proj create singapore -d kind-singapore-k8s,prod --grpc-web`
+- Japan
+    - `argocd proj create japan -d kind-japan-k8s,prod --grpc-web`
 
