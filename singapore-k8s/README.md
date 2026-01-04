@@ -19,3 +19,16 @@ helm install eg oci://docker.io/envoyproxy/gateway-helm \
   --create-namespace
 ```
 
+### Install GatewayClass and Gateway
+```bash
+kubectl apply -f gateway-api-setup/gatewayclass.yaml
+kubectl apply -f gateway-api-setup/internal-gateway.yaml
+```
+
+### Install SG App
+```bash
+helm upgrade --install sg-app . -f values.yaml -n prod --create-namespace
+```
+
+
+
