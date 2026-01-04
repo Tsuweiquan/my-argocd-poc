@@ -59,7 +59,85 @@ Example:
 `argocd proj create myproject -d https://kubernetes.default.svc,mynamespace`
 
 - Singapore
-    - `argocd proj create singapore -d kind-singapore-k8s,prod --grpc-web`
+    - `argocd proj create singapore -d https://172.18.0.3:6443,prod --grpc-web`
 - Japan
-    - `argocd proj create japan -d kind-japan-k8s,prod --grpc-web`
+    - `argocd proj create japan -d https://172.18.0.6:6443,prod --grpc-web`
 
+![argocd projects](argocd-projects.png)
+
+### Grant permissions to deploy to the cluster
+Under Project Summary Settings, we need to allow the following.
+- We need to allow `cluster resource allow list` to the project namespace
+- We need to allow `namespace resource allow list` to the project namespace
+
+```bash
+# Example:
+# argocd proj allow-cluster-resource <PROJECT> <GROUP> <KIND>
+# argocd proj allow-namespace-resource <PROJECT> <GROUP> <KIND> [<NAME>]
+# argocd proj deny-cluster-resource <PROJECT> <GROUP> <KIND>
+# argocd proj deny-namespace-resource <PROJECT> <GROUP> <KIND> [<NAME>]
+
+argocd proj allow-cluster-resource singapore "*" "*" --grpc-web
+> Group '*' and kind '*' is added to allowed cluster resources
+argocd proj allow-namespace-resource singapore "*" "*" --grpc-web
+> Group '*' and kind '*' not in denied namespaced resources
+
+argocd proj allow-cluster-resource japan "*" "*" --grpc-web
+> Group '*' and kind '*' is added to allowed cluster resources
+argocd proj allow-namespace-resource japan "*" "*" --grpc-web
+> Group '*' and kind '*' not in denied namespaced resources
+```
+
+## Add an Application
+Adding application via UI the first time will be the easiest!
+
+1. Add a new Repository
+    - This should be the repository of your application
+    - In this case, it will be my public repository on github
+        - https://github.com/Tsuweiquan/my-argocd-poc-sg-app-1
+    - Since this is a *public* repository, we can use HTTP/HTTPS without any credentials
+![Add New Repository](add-new-repo.png)
+```
+argocd repo list --grpc-web
+TYPE  NAME                    REPO                                                  INSECURE  OCI    LFS    CREDS  STATUS      MESSAGE  PROJECT
+git   my-argocd-poc-sg-app-1  https://github.com/Tsuweiquan/my-argocd-poc-sg-app-1  false     false  false  false  Successful           singapore
+```
+
+2. Add a new application
+General:
+    - App Name: `<This will be the release name of the application>`
+    - Project: `Select the argocd project created above` (e.g. singapore / japan)
+    - Sync Policy: `Automatic / Manual` 
+        - Checkbox
+            - Auto Sync ✅
+            - Prune ✅
+            - SelfHeal ✅ 
+
+Source:
+    - Repository URL: `Select the repository created above`
+    - Path: `helm/`
+        - This is the path to the helm chart to deploy the application
+    - TargetRevision: Tag -> `v1.0.0`
+
+Destination:
+    - Cluster: `Select the cluster` (e.g. kind-singapore-k8s / kind-japan-k8s)
+    - Namespace: `Select the namespace` (e.g. prod)
+
+
+![Add New Application SG](add-new-sg-app.png)
+```yaml
+# Sample Argocd App Spec
+project: singapore
+source:
+  repoURL: https://github.com/Tsuweiquan/my-argocd-poc-sg-app-1
+  path: helm/
+  targetRevision: v1.0.0
+destination:
+  namespace: prod
+  name: kind-singapore-k8s
+syncPolicy:
+  automated:
+    prune: true
+    selfHeal: true
+    enabled: true
+```
