@@ -59,10 +59,21 @@ Example:
 `argocd proj create myproject -d https://kubernetes.default.svc,mynamespace`
 
 - Singapore
-    - `argocd proj create singapore -d https://172.18.0.3:6443,prod --grpc-web`
+```bash
+argocd proj create singapore \
+  -d https://172.18.0.3:6443,prod \
+  -d https://172.18.0.3:6443,uat \
+  -d https://172.18.0.3:6443,dev \
+  --grpc-web
+```
 - Japan
-    - `argocd proj create japan -d https://172.18.0.6:6443,prod --grpc-web`
-
+```bash 
+argocd proj create japan \
+  -d https://172.18.0.6:6443,prod \
+  -d https://172.18.0.6:6443,uat \
+  -d https://172.18.0.6:6443,dev \
+  --grpc-web
+```
 ![argocd projects](argocd-projects.png)
 
 ### Grant permissions to deploy to the cluster
