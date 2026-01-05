@@ -151,4 +151,11 @@ syncPolicy:
     prune: true
     selfHeal: true
     enabled: true
+``` 
+
+# GitOps Repo to consolidate the Argocd application manifest
+
+1. Add a new Repository
+```bash
+argocd repo add https://github.com/tsuweiquan/my-argocd-poc-gitops.git --grpc-web --project singapore --name my-argocd-poc-gitops
 ```
