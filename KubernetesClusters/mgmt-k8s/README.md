@@ -55,36 +55,21 @@ sudo sysctl --system
 
 Create the management cluster:
 ```bash
+docker network remove kind
+   - run this if your kind cluster is unable to pull down public images
 kind create cluster --name mgmt-k8s
 ```
-
 ---
 
-## 3. ArgoCD Installation
-
-Deploy ArgoCD using the provided Helm values:
-
-```bash
-kubectl create namespace argocd
-helm upgrade --install argocd argo/argo-cd \
-  -n argocd \
-  -f mgmt-k8s/helm/argocd/values.yaml \
-  --version 9.2.3
-```
-
----
-
-## 4. Networking & Exposure
+## 3. Networking & Exposure
 
 ### Setup Envoy Gateway (Gateway API)
 We use Envoy Gateway to handle ingress traffic via the Kubernetes Gateway API.
 
 1. **Install Envoy Gateway**:
    ```bash
-   helm install eg oci://docker.io/envoyproxy/gateway-helm \
-     --version v1.6.1 \
-     -n envoy-gateway-system \
-     --create-namespace
+   helm upgrade --install eg oci://docker.io/envoyproxy/gateway-helm --version v1.6.1 -n envoy-gateway-system --create-namespace
+
    ```
 
 2. **Apply Gateway Configuration**:
@@ -103,10 +88,22 @@ Since Kind doesn't have a built-in LoadBalancer, we use `cloud-provider-kind` to
 
 2. **Run** (Keep this running in a separate terminal):
    ```bash
-   cloud-provider-kind
+   cloud-provider-kind --gateway-channel standard
    ```
 
+
 ---
+## 4. ArgoCD Installation
+
+Deploy ArgoCD using the provided Helm values:
+
+```bash
+kubectl create namespace argocd
+helm upgrade --install argocd argo/argo-cd \
+  -n argocd \
+  -f mgmt-k8s/helm/argocd/values.yaml \
+  --version 9.2.3
+```
 
 ## 5. Accessing ArgoCD
 
@@ -128,12 +125,6 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 
 ### Access URL
 Open **[http://argocd.mgmt.local](http://argocd.mgmt.local)** in your browser.
-
-
-## 6. Install and Access to Artifactory
-```bash
-helm upgrade --install artifactory jfrog/artifactory -f mgmt-k8s/helm/artifactory/values.yaml --namespace artifactory --create-namespace
-```
 
 ### DNS Configuration
 Retrieve the External IP of the Envoy service and add it to your `/etc/hosts`:

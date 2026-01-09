@@ -159,3 +159,6 @@ syncPolicy:
 ```bash
 argocd repo add https://github.com/tsuweiquan/my-argocd-poc-gitops.git --grpc-web --project singapore --name my-argocd-poc-gitops
 ```
+
+2. Add a new application by populating the helm chart, values file and application manifest in the gitops repo
+- Look at https://github.com/tsuweiquan/my-argocd-poc-gitops.git
