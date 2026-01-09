@@ -80,15 +80,15 @@ Ensure [gatewayclass.yaml](gateway-api-setup/gatewayclass.yaml) and [argocd-gate
 Since Kind doesn't have a built-in LoadBalancer, we use `cloud-provider-kind` to assign external IPs.
 
 1. **Install**:
-   ```bash
-   go install sigs.k8s.io/cloud-provider-kind@latest
-   sudo install ~/go/bin/cloud-provider-kind /usr/local/bin
-   ```
+```bash
+go install sigs.k8s.io/cloud-provider-kind@latest
+sudo install ~/go/bin/cloud-provider-kind /usr/local/bin
+```
 
 2. **Run** (Keep this running in a separate terminal):
-   ```bash
-   cloud-provider-kind --gateway-channel standard
-   ```
+```bash
+cloud-provider-kind --gateway-channel standard
+```
 
 
 ---
