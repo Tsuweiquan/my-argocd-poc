@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: singapore
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io # Optional: ensures project resources are cleaned up on deletion
+spec:
+  description: Applications that runs in Singapore Region should be placed in Singapore Project
+  sourceRepos:
+    - "https://github.com/Tsuweiquan/my-argocd-poc-sg-app-1.git"
+  # sourceNamespaces: []
+  destinations:
+    - server: https://172.18.0.4:6443
+      namespace: dev
+    - server: https://172.18.0.4:6443
+      namespace: uat
+    - server: https://172.18.0.4:6443
+      namespace: prod
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  # namespaceResourceBlacklist:
+  #   - group: "*"
+  #     kind: "*"
