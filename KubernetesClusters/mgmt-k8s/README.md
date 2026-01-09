@@ -67,15 +67,14 @@ kind create cluster --name mgmt-k8s
 We use Envoy Gateway to handle ingress traffic via the Kubernetes Gateway API.
 
 1. **Install Envoy Gateway**:
-   ```bash
-   helm upgrade --install eg oci://docker.io/envoyproxy/gateway-helm --version v1.6.1 -n envoy-gateway-system --create-namespace
-
-   ```
+```bash
+helm install eg oci://docker.io/envoyproxy/gateway-helm --version v1.5.6 -n envoy-gateway-system --create-namespace
+```
 
 2. **Apply Gateway Configuration**:
-   Ensure [gatewayclass.yaml](gateway-api-setup/gatewayclass.yaml) and [argocd-gateway.yaml](helm/argocd/argocd-gateway.yaml) are applied.
-   > [!NOTE]
-   > The `GatewayClass` must use `controllerName: gateway.envoyproxy.io/gatewayclass-controller`.
+Ensure [gatewayclass.yaml](gateway-api-setup/gatewayclass.yaml) and [argocd-gateway.yaml](helm/argocd/argocd-gateway.yaml) are applied.
+> [!NOTE]
+> The `GatewayClass` must use `controllerName: gateway.envoyproxy.io/gatewayclass-controller`.
 
 ### Enable LoadBalancer via cloud-provider-kind
 Since Kind doesn't have a built-in LoadBalancer, we use `cloud-provider-kind` to assign external IPs.
