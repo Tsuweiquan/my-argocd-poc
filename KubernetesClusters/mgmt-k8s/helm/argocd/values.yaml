@@ -415,6 +415,7 @@ configs:
     # You can customize parameters by adding parameters here.
     # (e.g.)
     # otlp.address: ''
+    server.insecure: true
 
   # Argo CD RBAC policy configuration
   ## Ref: https://github.com/argoproj/argo-cd/blob/master/docs/operator-manual/rbac.md
@@ -2393,7 +2394,7 @@ server:
   # Argo CD server ingress configuration
   ingress:
     # -- Enable an ingress resource for the Argo CD server
-    enabled: false
+    enabled: true
     # -- Specific implementation for ingress controller. One of `generic`, `aws` or `gke`
     ## Additional configuration might be required in related configuration sections
     controller: generic
@@ -2406,11 +2407,11 @@ server:
       # nginx.ingress.kubernetes.io/ssl-passthrough: "true"
 
     # -- Defines which ingress controller will implement the resource
-    ingressClassName: ""
+    ingressClassName: "traefik"
 
     # -- Argo CD server hostname
     # @default -- `""` (defaults to global.domain)
-    hostname: ""
+    hostname: "argocd.mgmt.local"
 
     # -- The path to Argo CD server
     path: /
@@ -2597,7 +2598,7 @@ server:
   # Refer to https://gateway-api.sigs.k8s.io/implementations/ for controller-specific details
   httproute:
     # -- Enable HTTPRoute resource for Argo CD server (Gateway API)
-    enabled: true
+    enabled: false
     # -- Additional HTTPRoute labels
     labels: {}
     # -- Additional HTTPRoute annotations

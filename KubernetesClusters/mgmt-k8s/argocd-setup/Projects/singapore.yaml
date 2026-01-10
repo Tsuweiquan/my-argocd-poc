@@ -11,11 +11,11 @@ spec:
     - "https://github.com/Tsuweiquan/my-argocd-poc-sg-app-1.git"
   # sourceNamespaces: []
   destinations:
-    - server: https://172.18.0.4:6443
+    - server: https://172.19.0.2:6443
       namespace: dev
-    - server: https://172.18.0.4:6443
+    - server: https://172.19.0.2:6443
       namespace: uat
-    - server: https://172.18.0.4:6443
+    - server: https://172.19.0.2:6443
       namespace: prod
   clusterResourceWhitelist:
     - group: "*"
