@@ -58,6 +58,14 @@ Create the management cluster:
 docker network remove kind
    - run this if your kind cluster is unable to pull down public images
 kind create cluster --name mgmt-k8s
+
+
+Or use k3d
+
+k3d cluster create my-k8s \
+  --port 8080:80@loadbalancer \
+  --port 8443:443@loadbalancer \
+  --agents 1
 ```
 ---
 
